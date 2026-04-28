@@ -12,8 +12,15 @@ const DEFAULTS = {
   format: "Y. n. j",
 };
 
-const FRAME_WIDTH = 600;
-const FRAME_HEIGHT = 280;
+// Centralize the extension footprint so dashboard resize work only changes one block.
+const LAYOUT = {
+  frameWidth: 600,
+  frameHeight: 280,
+  rangeBarHeight: 50,
+  quickPanelMinHeight: 48,
+  calendarHeight: 156,
+  configPanelHeight: 178,
+};
 
 let fp = null;
 let unregisterParamHandlers = [];
@@ -86,12 +93,25 @@ function loadSettings() {
   };
 }
 
+function applyLayoutSizeVars() {
+  const root = document.documentElement;
+  if (!root) return;
+
+  root.style.setProperty("--frame-width", `${LAYOUT.frameWidth}px`);
+  root.style.setProperty("--range-bar-height", `${LAYOUT.rangeBarHeight}px`);
+  root.style.setProperty("--quick-panel-min-height", `${LAYOUT.quickPanelMinHeight}px`);
+  root.style.setProperty("--calendar-height", `${LAYOUT.calendarHeight}px`);
+  root.style.setProperty("--config-panel-height", `${LAYOUT.configPanelHeight}px`);
+}
+
 async function setFrameSizeFixed() {
+  const { frameWidth, frameHeight } = LAYOUT;
+
   try {
     if (tableau?.extensions?.ui?.setFrameSizeAsync) {
-      await tableau.extensions.ui.setFrameSizeAsync(FRAME_WIDTH, FRAME_HEIGHT);
+      await tableau.extensions.ui.setFrameSizeAsync(frameWidth, frameHeight);
     } else if (tableau?.extensions?.ui?.resizeAsync) {
-      await tableau.extensions.ui.resizeAsync(FRAME_WIDTH, FRAME_HEIGHT);
+      await tableau.extensions.ui.resizeAsync(frameWidth, frameHeight);
     }
   } catch (e) {
     console.warn("setFrameSizeFixed failed:", e);
@@ -1344,6 +1364,7 @@ function updateQuickPanelVisibility() {
 }
 
 async function render() {
+  applyLayoutSizeVars();
   await setFrameSizeFixed();
 
   const settings = loadSettings();
