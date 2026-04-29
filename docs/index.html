@@ -6,28 +6,28 @@
   <title>조회기간</title>
 
   <link rel="stylesheet" href="./lib/flatpickr.min.css" />
-  <link rel="stylesheet" href="./styles.css?v=20260306_05" />
+  <link rel="stylesheet" href="./styles.css?v=20260429_03" />
 </head>
 
 <body>
   <div id="rangeBar" class="rangeBar">
     <div class="rangeLine" id="rangeLine">
       <div class="dateSlot" id="startSlot">
-        <span class="label" id="startLabel">시작날짜</span>
+        <span class="label" id="startLabel">시작</span>
         <span class="value dateValue" id="startText">-</span>
       </div>
 
       <span class="sep" id="dateSep">|</span>
 
       <div class="dateSlot" id="endSlot">
-        <span class="label" id="endLabel">종료날짜</span>
+        <span class="label" id="endLabel">종료</span>
         <span class="value dateValue" id="endText">-</span>
       </div>
     </div>
 
     <div class="topActions">
-      <button id="rangeModeBtn" class="miniBtn" type="button">기간변경</button>
-      <button id="quickModeBtn" class="miniBtn" type="button">빠른조회</button>
+      <button id="rangeModeBtn" class="miniBtn" type="button">기간</button>
+      <button id="quickModeBtn" class="miniBtn" type="button">빠른선택</button>
       <button id="applyBtn" class="miniBtn" type="button">적용</button>
       <button id="closePanelBtn" class="miniBtn btn-range-cancel" type="button">달력닫기</button>
       <button id="settingsBtn" class="settingsBtn" type="button" aria-label="설정">⚙</button>
@@ -36,11 +36,11 @@
 
   <div id="quickHost" class="quickHost">
     <div class="quickBar">
-      <button class="quickBtn" type="button" data-quick="today">금일</button>
-      <button class="quickBtn" type="button" data-quick="yesterday">전일</button>
-      <button class="quickBtn" type="button" data-quick="thisWeek">금주 누계</button>
-      <button class="quickBtn" type="button" data-quick="thisMonth">당월 누계</button>
-      <button class="quickBtn" type="button" data-quick="ytd">연 누계</button>
+      <button class="quickBtn" type="button" data-quick="today">오늘</button>
+      <button class="quickBtn" type="button" data-quick="yesterday">어제</button>
+      <button class="quickBtn" type="button" data-quick="thisWeek">이번주</button>
+      <button class="quickBtn" type="button" data-quick="thisMonth">이번달</button>
+      <button class="quickBtn" type="button" data-quick="ytd">YTD</button>
     </div>
   </div>
 
@@ -91,6 +91,6 @@
 
   <script src="./lib/flatpickr.min.js"></script>
   <script src="https://extensions.tableauusercontent.com/resources/tableau.extensions.1.latest.min.js"></script>
-  <script src="./main.js?v=20260429_01"></script>
+  <script src="./main.js?v=20260429_03"></script>
 </body>
 </html>

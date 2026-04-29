@@ -730,3 +730,324 @@ html, body {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
 }
+
+:root {
+  --frame-height: 150px;
+  --panel-surface: #f4f6f8;
+  --panel-border: #d0d5dd;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  overflow: hidden;
+}
+
+body:not(.cfgPage) {
+  position: relative;
+  background: transparent;
+  pointer-events: none;
+}
+
+.rangeBar,
+.quickHost,
+.calHost,
+.cfgPanel,
+.hint,
+.toast {
+  pointer-events: auto;
+}
+
+.rangeBar {
+  width: var(--frame-width);
+  background: transparent;
+  padding: 6px 8px;
+  gap: 6px;
+}
+
+.rangeLine {
+  min-width: 0;
+}
+
+.dateSlot {
+  min-width: 0;
+}
+
+.label {
+  color: rgba(255, 255, 255, 0.88);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.sep {
+  color: rgba(255, 255, 255, 0.34);
+}
+
+.dateValue {
+  background: #ffffff;
+  color: #111111;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.14);
+}
+
+.miniBtn {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.btn-range-active,
+.btn-quick-active {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.btn-range-active:hover:not(:disabled),
+.btn-quick-active:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.38);
+}
+
+.btn-range-inactive,
+.btn-range-inactive:disabled,
+.btn-quick-inactive,
+.btn-quick-inactive:disabled,
+.btn-primary-inactive,
+.btn-primary-inactive:disabled {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.54);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.btn-primary-active {
+  background: #ffffff;
+  color: #12335d;
+  border-color: rgba(255, 255, 255, 0.92);
+}
+
+.btn-primary-active:hover:not(:disabled) {
+  background: #eff4ff;
+  border-color: #eff4ff;
+}
+
+.btn-range-cancel,
+.btn-quick-cancel {
+  background: rgba(234, 84, 85, 0.16);
+  color: #ffe3e3;
+  border-color: rgba(255, 198, 198, 0.28);
+}
+
+.settingsBtn {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.hint {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  margin: 0;
+  padding: 0 8px;
+  min-height: 0;
+  text-align: left;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 10px;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.quickHost,
+.calHost,
+.cfgPanel {
+  background: var(--panel-surface);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+}
+
+body.panel-open .hint {
+  display: none;
+}
+
+body[data-layout-profile="wide"] .rangeBar {
+  height: var(--range-bar-height);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+body[data-layout-profile="wide"] .rangeLine {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex: 1 1 auto;
+}
+
+body[data-layout-profile="wide"] .dateSlot {
+  gap: 2px;
+}
+
+body[data-layout-profile="wide"] .label {
+  font-size: 11px;
+}
+
+body[data-layout-profile="wide"] .dateValue {
+  font-size: 12px;
+  padding: 3px 5px;
+}
+
+body[data-layout-profile="wide"] .topActions {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  margin-left: 4px;
+}
+
+body[data-layout-profile="wide"] .miniBtn {
+  min-width: 0;
+  height: 26px;
+  padding: 0 7px;
+  font-size: 11px;
+}
+
+body[data-layout-profile="wide"] .quickHost,
+body[data-layout-profile="wide"] .calHost {
+  width: var(--frame-width);
+  height: var(--calendar-height);
+  margin-top: 0;
+}
+
+body[data-layout-profile="wide"] .cfgPanel {
+  width: var(--frame-width);
+  height: var(--config-panel-height);
+  position: absolute;
+  inset: 0;
+  z-index: 18;
+}
+
+body[data-layout-profile="compact"] .rangeBar {
+  height: var(--range-bar-height);
+  display: grid;
+  grid-template-columns: 1fr;
+  align-content: start;
+  gap: 6px;
+  padding: 8px;
+}
+
+body[data-layout-profile="compact"] .rangeLine {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+
+body[data-layout-profile="compact"] .dateSlot {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+}
+
+body[data-layout-profile="compact"] .topActions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  margin-left: 0;
+}
+
+body[data-layout-profile="compact"] .miniBtn {
+  width: 100%;
+  min-width: 0;
+  height: 22px;
+  padding: 0 4px;
+  font-size: 10px;
+}
+
+body[data-layout-profile="compact"] .label {
+  font-size: 11px;
+}
+
+body[data-layout-profile="compact"] .dateValue {
+  font-size: 11px;
+  padding: 3px 6px;
+}
+
+body[data-layout-profile="compact"].panel-open .rangeBar {
+  display: none;
+}
+
+body[data-layout-profile="compact"] .quickHost.open,
+body[data-layout-profile="compact"] .calHost.open,
+body[data-layout-profile="compact"] .cfgPanel.open {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 18;
+}
+
+body[data-layout-profile="compact"] .quickHost {
+  padding: 8px;
+}
+
+body[data-layout-profile="compact"] .quickBar {
+  gap: 6px;
+  justify-content: flex-start;
+}
+
+body[data-layout-profile="compact"] .quickBtn {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 11px;
+}
+
+body[data-layout-profile="compact"] .calHost {
+  padding: 4px 6px;
+}
+
+body[data-layout-profile="compact"] .calHost .flatpickr-calendar {
+  border-radius: 10px !important;
+}
+
+body[data-layout-profile="compact"] .calHost .flatpickr-months {
+  height: 18px !important;
+  padding: 0 2px;
+}
+
+body[data-layout-profile="compact"] .calHost .flatpickr-month,
+body[data-layout-profile="compact"] .calHost .flatpickr-current-month,
+body[data-layout-profile="compact"] .calHost .flatpickr-prev-month,
+body[data-layout-profile="compact"] .calHost .flatpickr-next-month {
+  height: 18px !important;
+}
+
+body[data-layout-profile="compact"] .calHost .flatpickr-current-month,
+body[data-layout-profile="compact"] .calHost .flatpickr-current-month .flatpickr-monthDropdown-months,
+body[data-layout-profile="compact"] .calHost .flatpickr-current-month input.cur-year {
+  font-size: 10px !important;
+}
+
+body[data-layout-profile="compact"] .calHost .flatpickr-weekdays,
+body[data-layout-profile="compact"] .calHost .flatpickr-weekday {
+  height: 10px !important;
+  line-height: 10px !important;
+  font-size: 8px !important;
+}
+
+body[data-layout-profile="compact"] .calHost .flatpickr-days,
+body[data-layout-profile="compact"] .calHost .dayContainer {
+  height: 76px !important;
+  min-height: 76px !important;
+}
+
+body[data-layout-profile="compact"] .calHost .flatpickr-day {
+  height: 12px !important;
+  line-height: 12px !important;
+  font-size: 9px !important;
+}

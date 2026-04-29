@@ -13,29 +13,31 @@ const DEFAULTS = {
 };
 
 const LAYOUT_PROFILE_BY_NAME = {
-  desktop: {
-    frameWidth: 500,
-    frameHeight: 150,
-    rangeBarHeight: 50,
-    quickPanelMinHeight: 48,
-    calendarHeight: 156,
-    configPanelHeight: 178,
-  },
-  tablet: {
+  wide: {
     frameWidth: 420,
     frameHeight: 150,
-    rangeBarHeight: 50,
-    quickPanelMinHeight: 48,
-    calendarHeight: 156,
-    configPanelHeight: 178,
+    rangeBarHeight: 48,
+    quickPanelMinHeight: 102,
+    calendarHeight: 102,
+    configPanelHeight: 150,
+  },
+  compact: {
+    frameWidth: 300,
+    frameHeight: 112,
+    rangeBarHeight: 72,
+    quickPanelMinHeight: 112,
+    calendarHeight: 112,
+    configPanelHeight: 112,
   },
 };
-const TABLET_LAYOUT_MAX_WIDTH = 460;
+const WIDE_LAYOUT_MIN_WIDTH = 360;
 
 let fp = null;
 let unregisterParamHandlers = [];
 let activeLayoutProfileName = "";
 let layoutResizeRafId = 0;
+let layoutResizeObserver = null;
+let unregisterDashboardLayoutListener = null;
 
 let isConfigOpen = false;
 let isCalendarOpen = false;
@@ -111,11 +113,21 @@ function getLayoutProfileOverride() {
   return LAYOUT_PROFILE_BY_NAME[value] ? value : "";
 }
 
+function getContainerRect() {
+  const root = document.documentElement;
+  const body = document.body;
+  const width = Math.round(root?.clientWidth || body?.clientWidth || 0);
+  const height = Math.round(root?.clientHeight || body?.clientHeight || 0);
+
+  return { width, height };
+}
+
 function resolveLayoutProfileName() {
   const forcedProfile = getLayoutProfileOverride();
   if (forcedProfile) return forcedProfile;
 
-  return window.innerWidth <= TABLET_LAYOUT_MAX_WIDTH ? "tablet" : "desktop";
+  const { width } = getContainerRect();
+  return width >= WIDE_LAYOUT_MIN_WIDTH ? "wide" : "compact";
 }
 
 function getActiveLayoutProfile() {
@@ -134,6 +146,7 @@ function applyLayoutSizeVars(layout) {
   if (document.body) document.body.dataset.layoutProfile = layout.name;
 
   root.style.setProperty("--frame-width", `${layout.frameWidth}px`);
+  root.style.setProperty("--frame-height", `${layout.frameHeight}px`);
   root.style.setProperty("--range-bar-height", `${layout.rangeBarHeight}px`);
   root.style.setProperty("--quick-panel-min-height", `${layout.quickPanelMinHeight}px`);
   root.style.setProperty("--calendar-height", `${layout.calendarHeight}px`);
@@ -154,30 +167,37 @@ async function setFrameSizeFixed(layout) {
 
 async function syncLayoutProfile() {
   const layout = getActiveLayoutProfile();
+  const isProfileChanged = activeLayoutProfileName !== layout.name;
   activeLayoutProfileName = layout.name;
-  applyLayoutSizeVars(layout);
-  await setFrameSizeFixed(layout);
+
+  if (isProfileChanged || !document.documentElement?.style.getPropertyValue("--frame-width")) {
+    applyLayoutSizeVars(layout);
+    await setFrameSizeFixed(layout);
+  }
+
+  syncOpenStateClasses();
 }
 
 function bindLayoutProfileResize() {
-  window.addEventListener("resize", () => {
+  const requestSync = () => {
     if (layoutResizeRafId) cancelAnimationFrame(layoutResizeRafId);
 
     layoutResizeRafId = requestAnimationFrame(() => {
       layoutResizeRafId = 0;
-
-      if (getLayoutProfileOverride()) {
-        return;
-      }
-
-      const nextProfileName = resolveLayoutProfileName();
-      if (nextProfileName === activeLayoutProfileName) {
-        return;
-      }
-
       void syncLayoutProfile();
     });
-  });
+  };
+
+  window.addEventListener("resize", requestSync);
+
+  if ("ResizeObserver" in window) {
+    layoutResizeObserver = new ResizeObserver(() => {
+      requestSync();
+    });
+
+    if (document.documentElement) layoutResizeObserver.observe(document.documentElement);
+    if (document.body) layoutResizeObserver.observe(document.body);
+  }
 }
 
 async function getDashboard() {
@@ -392,6 +412,7 @@ function getParamDisplay(p, format) {
 
 function updateDateFieldLayout() {
   const settings = loadSettings();
+  const isCompact = activeLayoutProfileName === "compact";
 
   const rangeBar = qs("rangeBar");
   const startSlot = qs("startSlot");
@@ -408,14 +429,31 @@ function updateDateFieldLayout() {
     if (startSlot) startSlot.style.display = "none";
     if (sep) sep.style.display = "none";
     if (endSlot) endSlot.style.display = "flex";
-    if (endLabel) endLabel.textContent = "조회날짜";
-  } else {
-    if (startSlot) startSlot.style.display = "flex";
-    if (sep) sep.style.display = "";
-    if (endSlot) endSlot.style.display = "flex";
-    if (startLabel) startLabel.textContent = "시작날짜";
-    if (endLabel) endLabel.textContent = "종료날짜";
+    if (endLabel) endLabel.textContent = isCompact ? "조회" : "조회일";
+    return;
   }
+
+  if (startSlot) startSlot.style.display = "flex";
+  if (sep) sep.style.display = isCompact ? "none" : "";
+  if (endSlot) endSlot.style.display = "flex";
+  if (startLabel) startLabel.textContent = "시작";
+  if (endLabel) endLabel.textContent = "종료";
+}
+
+function syncOpenStateClasses() {
+  const body = document.body;
+  if (!body) return;
+
+  const panelKind = isConfigOpen
+    ? "config"
+    : isCalendarOpen
+      ? "calendar"
+      : isQuickOpen
+        ? "quick"
+        : "closed";
+
+  body.classList.toggle("panel-open", panelKind !== "closed");
+  body.dataset.panelKind = panelKind;
 }
 
 async function syncUIFromCurrentParameterValues(settings) {
@@ -511,12 +549,14 @@ function closeConfigPanelUI() {
   isConfigOpen = false;
   const p = qs("cfgPanel");
   if (p) p.classList.remove("open");
+  syncOpenStateClasses();
 }
 
 function openConfigPanelUI() {
   isConfigOpen = true;
   const p = qs("cfgPanel");
   if (p) p.classList.add("open");
+  syncOpenStateClasses();
 }
 
 function closeCalendarUI() {
@@ -533,6 +573,7 @@ function closeCalendarUI() {
 
   updateValueHighlightState();
   updateActionStates();
+  syncOpenStateClasses();
 }
 
 function openCalendarUI() {
@@ -541,6 +582,7 @@ function openCalendarUI() {
   if (h) h.classList.add("open");
   updateValueHighlightState();
   updateActionStates();
+  syncOpenStateClasses();
 }
 
 function closeQuickPanelUI() {
@@ -549,6 +591,7 @@ function closeQuickPanelUI() {
   if (h) h.classList.remove("open");
   updateValueHighlightState();
   updateActionStates();
+  syncOpenStateClasses();
 }
 
 function openQuickPanelUI() {
@@ -557,6 +600,7 @@ function openQuickPanelUI() {
   if (h) h.classList.add("open");
   updateValueHighlightState();
   updateActionStates();
+  syncOpenStateClasses();
 }
 
 function getKoLocale() {
@@ -798,7 +842,7 @@ function updatePrimaryModeButton() {
   if (!btn) return;
 
   const isRangeOpen = isRangePickingMode();
-  btn.textContent = isRangeOpen ? "취소" : "기간변경";
+  btn.textContent = isRangeOpen ? "취소" : "기간";
 
   const enabled = !isApplying && (isRangeOpen || canEnableRangeMode(settings));
   btn.disabled = !enabled;
@@ -818,7 +862,7 @@ function updateQuickModeButton() {
   if (!btn) return;
 
   const isOpen = isQuickPickingMode();
-  btn.textContent = isOpen ? "취소" : "빠른조회";
+  btn.textContent = isOpen ? "취소" : "빠른선택";
 
   const enabled = !isApplying && (isOpen || canEnableQuickMode());
   btn.disabled = !enabled;
@@ -1398,6 +1442,7 @@ function bindHandlers() {
 
 function updateQuickPanelVisibility() {
   const settings = loadSettings();
+  const isCompact = isCompactProfile();
   const todayBtn = document.querySelector('[data-quick="today"]');
   const yesterdayBtn = document.querySelector('[data-quick="yesterday"]');
   const weekBtn = document.querySelector('[data-quick="thisWeek"]');
@@ -1405,7 +1450,7 @@ function updateQuickPanelVisibility() {
   const ytdBtn = document.querySelector('[data-quick="ytd"]');
 
   if (settings.kind === "single") {
-    if (todayBtn) todayBtn.textContent = "당월";
+    if (todayBtn) todayBtn.textContent = "이번달";
     if (yesterdayBtn) {
       yesterdayBtn.textContent = "전월";
       yesterdayBtn.style.display = "";
@@ -1413,16 +1458,24 @@ function updateQuickPanelVisibility() {
     if (weekBtn) weekBtn.style.display = "none";
     if (monthBtn) monthBtn.style.display = "none";
     if (ytdBtn) ytdBtn.style.display = "none";
+    return;
   } else {
-    if (todayBtn) todayBtn.textContent = "금일";
+    if (todayBtn) todayBtn.textContent = "오늘";
     if (yesterdayBtn) {
-      yesterdayBtn.textContent = "전일";
+      yesterdayBtn.textContent = "어제";
       yesterdayBtn.style.display = "";
     }
-    if (weekBtn) weekBtn.style.display = "";
-    if (monthBtn) monthBtn.style.display = "";
-    if (ytdBtn) ytdBtn.style.display = "";
+    if (monthBtn) {
+      monthBtn.textContent = "이번달";
+      monthBtn.style.display = "";
+    }
+    if (weekBtn) weekBtn.style.display = isCompact ? "none" : "";
+    if (ytdBtn) ytdBtn.style.display = isCompact ? "none" : "";
   }
+}
+
+function isCompactProfile() {
+  return activeLayoutProfileName === "compact";
 }
 
 async function render() {
@@ -1467,6 +1520,12 @@ async function render() {
 async function init() {
   await tableau.extensions.initializeAsync();
   bindLayoutProfileResize();
+
+  const dash = await getDashboard();
+  unregisterDashboardLayoutListener = dash.addEventListener(
+    tableau.TableauEventType.DashboardLayoutChanged,
+    async () => { await syncLayoutProfile(); }
+  );
 
   tableau.extensions.settings.addEventListener(
     tableau.TableauEventType.SettingsChanged,
