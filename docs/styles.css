@@ -874,14 +874,14 @@ body:not(.cfgPage) .btn-quick-inactive:disabled {
 }
 
 body:not(.cfgPage) .btn-primary-active {
-  background: #2f6ff3;
-  color: #ffffff;
-  border-color: #2f6ff3;
+  background: #f2c94c;
+  color: #5b4300;
+  border-color: #f2c94c;
 }
 
 body:not(.cfgPage) .btn-primary-active:hover:not(:disabled) {
-  background: #255fe0;
-  border-color: #255fe0;
+  background: #f6d568;
+  border-color: #f6d568;
 }
 
 body:not(.cfgPage) .btn-primary-inactive,
