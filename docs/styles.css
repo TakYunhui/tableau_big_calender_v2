@@ -874,21 +874,26 @@ body:not(.cfgPage) .btn-quick-inactive:disabled {
 }
 
 body:not(.cfgPage) .btn-primary-active {
-  background: #f2c94c;
-  color: #5b4300;
-  border-color: #f2c94c;
+  background: #f2c94c !important;
+  color: #5b4300 !important;
+  border-color: #f2c94c !important;
+  opacity: 1 !important;
+  box-shadow: 0 2px 8px rgba(173, 135, 13, 0.18) !important;
 }
 
 body:not(.cfgPage) .btn-primary-active:hover:not(:disabled) {
-  background: #f6d568;
-  border-color: #f6d568;
+  background: #f6d568 !important;
+  border-color: #f6d568 !important;
 }
 
 body:not(.cfgPage) .btn-primary-inactive,
 body:not(.cfgPage) .btn-primary-inactive:disabled {
-  background: #f6df8e;
-  color: #7a5b07;
-  border-color: #f1d36d;
+  background: #f6df8e !important;
+  color: #7a5b07 !important;
+  border-color: #f1d36d !important;
+  opacity: 1 !important;
+  box-shadow: 0 1px 4px rgba(173, 135, 13, 0.10) !important;
+  -webkit-text-fill-color: #7a5b07;
 }
 
 body:not(.cfgPage) .btn-range-cancel,
