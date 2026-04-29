@@ -12,18 +12,30 @@ const DEFAULTS = {
   format: "Y. n. j",
 };
 
-// Centralize the extension footprint so dashboard resize work only changes one block.
-const LAYOUT = {
-  frameWidth: 600,
-  frameHeight: 280,
-  rangeBarHeight: 50,
-  quickPanelMinHeight: 48,
-  calendarHeight: 156,
-  configPanelHeight: 178,
+const LAYOUT_PROFILE_BY_NAME = {
+  desktop: {
+    frameWidth: 500,
+    frameHeight: 150,
+    rangeBarHeight: 50,
+    quickPanelMinHeight: 48,
+    calendarHeight: 156,
+    configPanelHeight: 178,
+  },
+  tablet: {
+    frameWidth: 420,
+    frameHeight: 150,
+    rangeBarHeight: 50,
+    quickPanelMinHeight: 48,
+    calendarHeight: 156,
+    configPanelHeight: 178,
+  },
 };
+const TABLET_LAYOUT_MAX_WIDTH = 460;
 
 let fp = null;
 let unregisterParamHandlers = [];
+let activeLayoutProfileName = "";
+let layoutResizeRafId = 0;
 
 let isConfigOpen = false;
 let isCalendarOpen = false;
@@ -93,29 +105,79 @@ function loadSettings() {
   };
 }
 
-function applyLayoutSizeVars() {
+function getLayoutProfileOverride() {
+  const params = new URLSearchParams(window.location.search);
+  const value = String(params.get("layoutProfile") || "").trim().toLowerCase();
+  return LAYOUT_PROFILE_BY_NAME[value] ? value : "";
+}
+
+function resolveLayoutProfileName() {
+  const forcedProfile = getLayoutProfileOverride();
+  if (forcedProfile) return forcedProfile;
+
+  return window.innerWidth <= TABLET_LAYOUT_MAX_WIDTH ? "tablet" : "desktop";
+}
+
+function getActiveLayoutProfile() {
+  const name = resolveLayoutProfileName();
+  return {
+    name,
+    ...LAYOUT_PROFILE_BY_NAME[name],
+  };
+}
+
+function applyLayoutSizeVars(layout) {
   const root = document.documentElement;
   if (!root) return;
 
-  root.style.setProperty("--frame-width", `${LAYOUT.frameWidth}px`);
-  root.style.setProperty("--range-bar-height", `${LAYOUT.rangeBarHeight}px`);
-  root.style.setProperty("--quick-panel-min-height", `${LAYOUT.quickPanelMinHeight}px`);
-  root.style.setProperty("--calendar-height", `${LAYOUT.calendarHeight}px`);
-  root.style.setProperty("--config-panel-height", `${LAYOUT.configPanelHeight}px`);
+  root.dataset.layoutProfile = layout.name;
+  if (document.body) document.body.dataset.layoutProfile = layout.name;
+
+  root.style.setProperty("--frame-width", `${layout.frameWidth}px`);
+  root.style.setProperty("--range-bar-height", `${layout.rangeBarHeight}px`);
+  root.style.setProperty("--quick-panel-min-height", `${layout.quickPanelMinHeight}px`);
+  root.style.setProperty("--calendar-height", `${layout.calendarHeight}px`);
+  root.style.setProperty("--config-panel-height", `${layout.configPanelHeight}px`);
 }
 
-async function setFrameSizeFixed() {
-  const { frameWidth, frameHeight } = LAYOUT;
-
+async function setFrameSizeFixed(layout) {
   try {
     if (tableau?.extensions?.ui?.setFrameSizeAsync) {
-      await tableau.extensions.ui.setFrameSizeAsync(frameWidth, frameHeight);
+      await tableau.extensions.ui.setFrameSizeAsync(layout.frameWidth, layout.frameHeight);
     } else if (tableau?.extensions?.ui?.resizeAsync) {
-      await tableau.extensions.ui.resizeAsync(frameWidth, frameHeight);
+      await tableau.extensions.ui.resizeAsync(layout.frameWidth, layout.frameHeight);
     }
   } catch (e) {
     console.warn("setFrameSizeFixed failed:", e);
   }
+}
+
+async function syncLayoutProfile() {
+  const layout = getActiveLayoutProfile();
+  activeLayoutProfileName = layout.name;
+  applyLayoutSizeVars(layout);
+  await setFrameSizeFixed(layout);
+}
+
+function bindLayoutProfileResize() {
+  window.addEventListener("resize", () => {
+    if (layoutResizeRafId) cancelAnimationFrame(layoutResizeRafId);
+
+    layoutResizeRafId = requestAnimationFrame(() => {
+      layoutResizeRafId = 0;
+
+      if (getLayoutProfileOverride()) {
+        return;
+      }
+
+      const nextProfileName = resolveLayoutProfileName();
+      if (nextProfileName === activeLayoutProfileName) {
+        return;
+      }
+
+      void syncLayoutProfile();
+    });
+  });
 }
 
 async function getDashboard() {
@@ -1364,8 +1426,7 @@ function updateQuickPanelVisibility() {
 }
 
 async function render() {
-  applyLayoutSizeVars();
-  await setFrameSizeFixed();
+  await syncLayoutProfile();
 
   const settings = loadSettings();
 
@@ -1405,6 +1466,7 @@ async function render() {
 
 async function init() {
   await tableau.extensions.initializeAsync();
+  bindLayoutProfileResize();
 
   tableau.extensions.settings.addEventListener(
     tableau.TableauEventType.SettingsChanged,
