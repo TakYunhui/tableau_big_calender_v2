@@ -4,10 +4,10 @@
           xsi:schemaLocation="http://www.tableau.com/xml/extension_manifest extension_manifest.xsd"
           manifest-version="0.1">
 
-  <dashboard-extension id="com.kisco.bigcalendar" extension-version="1.0.1">
+  <dashboard-extension id="com.kisco.bigcalendar" extension-version="1.0.2">
     <default-locale>ko_KR</default-locale>
 
-    <name>Big Calendar Date Picker</name>
+    <name>Big Calendar Date Picker v2</name>
     <description>Large date range picker for Tableau parameters.</description>
 
     <author name="KiscoHoldings"
