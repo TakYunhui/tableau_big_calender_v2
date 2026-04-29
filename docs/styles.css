@@ -798,21 +798,23 @@ body:not(.cfgPage) {
 
 .miniBtn {
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border: 1px solid #9badcf;
+  background: #dde5f4;
+  color: #18345d;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
 }
 
 .btn-range-active,
 .btn-quick-active {
-  background: rgba(255, 255, 255, 0.16);
-  color: #ffffff;
-  border-color: rgba(255, 255, 255, 0.28);
+  background: #dde7f7;
+  color: #18345d;
+  border-color: #a8bbdf;
 }
 
 .btn-range-active:hover:not(:disabled),
 .btn-quick-active:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.22);
-  border-color: rgba(255, 255, 255, 0.38);
+  background: #edf3ff;
+  border-color: #b8c8e6;
 }
 
 .btn-range-inactive,
@@ -821,31 +823,35 @@ body:not(.cfgPage) {
 .btn-quick-inactive:disabled,
 .btn-primary-inactive,
 .btn-primary-inactive:disabled {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.54);
-  border-color: rgba(255, 255, 255, 0.14);
+  background: #7186ae;
+  color: rgba(255, 255, 255, 0.88);
+  border-color: #90a4cb;
 }
 
 .btn-primary-active {
   background: #ffffff;
   color: #12335d;
-  border-color: rgba(255, 255, 255, 0.92);
+  border-color: #d8e1f2;
 }
 
 .btn-primary-active:hover:not(:disabled) {
   background: #eff4ff;
-  border-color: #eff4ff;
+  border-color: #d8e1f2;
 }
 
 .btn-range-cancel,
 .btn-quick-cancel {
-  background: rgba(234, 84, 85, 0.16);
-  color: #ffe3e3;
-  border-color: rgba(255, 198, 198, 0.28);
+  background: #7d5d8f;
+  color: #ffffff;
+  border-color: #9f83af;
 }
 
 .settingsBtn {
-  color: rgba(255, 255, 255, 0.92);
+  color: #ffffff;
+  background: #58709d;
+  border: 1px solid #7f96c0;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
 }
 
 .hint {
@@ -922,6 +928,47 @@ body[data-layout-profile="wide"] .calHost {
   width: var(--frame-width);
   height: var(--calendar-height);
   margin-top: 0;
+}
+
+body[data-layout-profile="wide"] .calHost {
+  padding: 1px 3px;
+}
+
+body[data-layout-profile="wide"] .calHost .flatpickr-calendar {
+  height: 100% !important;
+}
+
+body[data-layout-profile="wide"] .calHost .flatpickr-months,
+body[data-layout-profile="wide"] .calHost .flatpickr-month,
+body[data-layout-profile="wide"] .calHost .flatpickr-current-month,
+body[data-layout-profile="wide"] .calHost .flatpickr-prev-month,
+body[data-layout-profile="wide"] .calHost .flatpickr-next-month {
+  height: 18px !important;
+}
+
+body[data-layout-profile="wide"] .calHost .flatpickr-current-month,
+body[data-layout-profile="wide"] .calHost .flatpickr-current-month .flatpickr-monthDropdown-months,
+body[data-layout-profile="wide"] .calHost .flatpickr-current-month input.cur-year {
+  font-size: 12px !important;
+}
+
+body[data-layout-profile="wide"] .calHost .flatpickr-weekdays,
+body[data-layout-profile="wide"] .calHost .flatpickr-weekday {
+  height: 12px !important;
+  line-height: 12px !important;
+  font-size: 9px !important;
+}
+
+body[data-layout-profile="wide"] .calHost .flatpickr-days,
+body[data-layout-profile="wide"] .calHost .dayContainer {
+  height: 64px !important;
+  min-height: 64px !important;
+}
+
+body[data-layout-profile="wide"] .calHost .flatpickr-day {
+  height: 10px !important;
+  line-height: 10px !important;
+  font-size: 9px !important;
 }
 
 body[data-layout-profile="wide"] .cfgPanel {
