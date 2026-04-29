@@ -886,9 +886,9 @@ body:not(.cfgPage) .btn-primary-active:hover:not(:disabled) {
 
 body:not(.cfgPage) .btn-primary-inactive,
 body:not(.cfgPage) .btn-primary-inactive:disabled {
-  background: #c7d4ee;
-  color: #3f5a86;
-  border-color: #9fb3da;
+  background: #f6df8e;
+  color: #7a5b07;
+  border-color: #f1d36d;
 }
 
 body:not(.cfgPage) .btn-range-cancel,
