@@ -1,11 +1,11 @@
-# tableau_big_calender
+# tableau_big_calender_v2
 
 Tableau Dashboard Extension 기반 날짜 선택 UI 확장 프로그램.
 
 기본 Tableau 날짜 선택 UI보다 더 큰 달력 형태로 날짜를 선택하고, 선택 결과를 Tableau 파라미터에 반영하는 목적의 확장 프로그램이다.
 
 배포 URL:
-`https://kiscoholdings1-dev.github.io/tableau_big_calender/`
+`https://takyunhui.github.io/tableau_big_calender_v2/`
 
 매니페스트:
 [`docs/calender.trex`](/c:/dev/tableau_big_calender/docs/calender.trex)
