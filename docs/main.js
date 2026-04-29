@@ -842,15 +842,13 @@ function updatePrimaryModeButton() {
   if (!btn) return;
 
   const isRangeOpen = isRangePickingMode();
-  btn.textContent = isRangeOpen ? "취소" : "기간";
+  btn.textContent = "기간";
 
   const enabled = !isApplying && (isRangeOpen || canEnableRangeMode(settings));
   btn.disabled = !enabled;
 
   btn.classList.remove("btn-range-active", "btn-range-inactive", "btn-range-cancel");
-  if (isRangeOpen) {
-    btn.classList.add(enabled ? "btn-range-cancel" : "btn-range-inactive");
-  } else if (enabled) {
+  if (enabled) {
     btn.classList.add("btn-range-active");
   } else {
     btn.classList.add("btn-range-inactive");
@@ -862,15 +860,13 @@ function updateQuickModeButton() {
   if (!btn) return;
 
   const isOpen = isQuickPickingMode();
-  btn.textContent = isOpen ? "취소" : "빠른선택";
+  btn.textContent = "빠른선택";
 
   const enabled = !isApplying && (isOpen || canEnableQuickMode());
   btn.disabled = !enabled;
 
   btn.classList.remove("btn-quick-active", "btn-quick-inactive", "btn-quick-cancel");
-  if (isOpen) {
-    btn.classList.add(enabled ? "btn-quick-cancel" : "btn-quick-inactive");
-  } else if (enabled) {
+  if (enabled) {
     btn.classList.add("btn-quick-active");
   } else {
     btn.classList.add("btn-quick-inactive");
@@ -884,7 +880,7 @@ function updateApplyButton() {
 
   const enabled = canEnableApply(settings);
   btn.disabled = !enabled;
-  btn.textContent = isApplying ? "적용중" : "적용";
+  btn.textContent = "적용";
 
   btn.classList.remove("btn-primary-active", "btn-primary-inactive", "loading");
   if (isApplying) {
@@ -901,6 +897,7 @@ function updateClosePanelButton() {
   if (!btn) return;
 
   const visible = isCalendarOpen || isQuickOpen;
+  btn.textContent = "닫기";
   btn.style.display = visible ? "inline-flex" : "none";
   btn.disabled = isApplying || !visible;
 }
@@ -1351,13 +1348,9 @@ function bindHandlers() {
 
       if (isApplying) return;
 
-      if (isRangePickingMode()) {
-        cancelRangeSelection();
-        return;
-      }
-
       const settings = loadSettings();
       if (!canEnableRangeMode(settings)) return;
+      if (isRangePickingMode()) return;
       openCalendarFor("range");
     };
   }
@@ -1368,12 +1361,8 @@ function bindHandlers() {
 
       if (isApplying) return;
 
-      if (isQuickPickingMode()) {
-        cancelQuickSelection();
-        return;
-      }
-
       if (!canEnableQuickMode()) return;
+      if (isQuickPickingMode()) return;
 
       closeCalendarUI();
       openQuickPanelUI();
