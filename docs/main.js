@@ -401,12 +401,12 @@ function numberToDateDisplay(n, format) {
 
   if (n > 10_000_000_000) {
     const d = new Date(n);
-    return Number.isNaN(d.getTime()) ? String(n) : formatDateForUI(d, format);
+    return Number.isNaN(d.getTime()) ? "" : formatDateForUI(d, format);
   }
 
   const base = new Date(Date.UTC(1899, 11, 30));
   const d = new Date(base.getTime() + n * 24 * 60 * 60 * 1000);
-  return Number.isNaN(d.getTime()) ? String(n) : formatDateForUI(d, format);
+  return Number.isNaN(d.getTime()) ? "" : formatDateForUI(d, format);
 }
 
 function tableauSerialNumberToDate(n) {
@@ -454,7 +454,6 @@ function getParamDisplay(p, format) {
     const fv = cv.formattedValue.trim();
     const formattedDate = parseDateStringValue(fv);
     if (formattedDate) return formatDateForUI(formattedDate, format);
-    if (fv !== "" && fv !== "0") return fv;
   }
 
   const raw = (cv && typeof cv === "object" && "value" in cv) ? cv.value : cv;
@@ -469,8 +468,6 @@ function getParamDisplay(p, format) {
 
     const n = Number(raw);
     if (!Number.isNaN(n)) return numberToDateDisplay(n, format);
-
-    return raw;
   }
 
   if (typeof raw === "number") return numberToDateDisplay(raw, format);
