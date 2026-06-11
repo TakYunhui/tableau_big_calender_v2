@@ -265,15 +265,29 @@ function createDateFromParts(year, month, day) {
   return startOfDay(date);
 }
 
+function createMonthStartDateFromParts(year, month) {
+  return createDateFromParts(year, month, 1);
+}
+
 function parseDateStringValue(value) {
   if (typeof value !== "string") return null;
 
   const text = value.trim();
   if (!text || text === "-") return null;
 
+  const compactMonth = text.match(/^(\d{4})(\d{2})$/);
+  if (compactMonth) {
+    return createMonthStartDateFromParts(compactMonth[1], compactMonth[2]);
+  }
+
   const compact = text.match(/^(\d{4})(\d{2})(\d{2})$/);
   if (compact) {
     return createDateFromParts(compact[1], compact[2], compact[3]);
+  }
+
+  const koMonth = text.match(/^(\d{4})\s*년\s*(\d{1,2})\s*월(?:\s+.*)?$/);
+  if (koMonth) {
+    return createMonthStartDateFromParts(koMonth[1], koMonth[2]);
   }
 
   const ko = text.match(/^(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일(?:\s+.*)?$/);
@@ -288,6 +302,11 @@ function parseDateStringValue(value) {
     .replace(/-$/, "")
     .trim();
 
+  const dashedMonth = normalized.match(/^(\d{4})-(\d{1,2})(?:\s+.*)?$/);
+  if (dashedMonth) {
+    return createMonthStartDateFromParts(dashedMonth[1], dashedMonth[2]);
+  }
+
   const dashed = normalized.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:\s+.*)?$/);
   if (dashed) {
     return createDateFromParts(dashed[1], dashed[2], dashed[3]);
@@ -295,6 +314,22 @@ function parseDateStringValue(value) {
 
   const date = new Date(text);
   return Number.isNaN(date.getTime()) ? null : startOfDay(date);
+}
+
+function parseNumericDateValue(value) {
+  if (typeof value !== "number" || Number.isNaN(value)) return null;
+
+  const text = String(Math.trunc(value));
+
+  if (/^\d{6}$/.test(text)) {
+    return createMonthStartDateFromParts(text.slice(0, 4), text.slice(4, 6));
+  }
+
+  if (/^\d{8}$/.test(text)) {
+    return createDateFromParts(text.slice(0, 4), text.slice(4, 6), text.slice(6, 8));
+  }
+
+  return null;
 }
 
 function parseDisplayToDate(text) {
@@ -361,6 +396,9 @@ function setDateTextsFromDates(settings, startDate, endDate) {
 function numberToDateDisplay(n, format) {
   if (typeof n !== "number" || Number.isNaN(n)) return "";
 
+  const numericDate = parseNumericDateValue(n);
+  if (numericDate) return formatDateForUI(numericDate, format);
+
   if (n > 10_000_000_000) {
     const d = new Date(n);
     return Number.isNaN(d.getTime()) ? String(n) : formatDateForUI(d, format);
@@ -373,6 +411,9 @@ function numberToDateDisplay(n, format) {
 
 function tableauSerialNumberToDate(n) {
   if (typeof n !== "number" || Number.isNaN(n)) return null;
+
+  const numericDate = parseNumericDateValue(n);
+  if (numericDate) return numericDate;
 
   if (n > 10_000_000_000) {
     const d = new Date(n);
