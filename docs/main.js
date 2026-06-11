@@ -247,13 +247,58 @@ function cloneDate(d) {
   return d ? new Date(d.getTime()) : null;
 }
 
-function parseDisplayToDate(text) {
+function createDateFromParts(year, month, day) {
+  const y = Number(year);
+  const m = Number(month);
+  const d = Number(day);
+  const date = new Date(y, m - 1, d);
+
+  if (
+    Number.isNaN(date.getTime()) ||
+    date.getFullYear() !== y ||
+    date.getMonth() !== m - 1 ||
+    date.getDate() !== d
+  ) {
+    return null;
+  }
+
+  return startOfDay(date);
+}
+
+function parseDateStringValue(value) {
+  if (typeof value !== "string") return null;
+
+  const text = value.trim();
   if (!text || text === "-") return null;
 
-  const normalized = String(text).trim().replace(/\./g, "-");
-  const d = new Date(normalized);
+  const compact = text.match(/^(\d{4})(\d{2})(\d{2})$/);
+  if (compact) {
+    return createDateFromParts(compact[1], compact[2], compact[3]);
+  }
 
-  return Number.isNaN(d.getTime()) ? null : d;
+  const ko = text.match(/^(\d{4})\s*년\s*(\d{1,2})\s*월\s*(\d{1,2})\s*일(?:\s+.*)?$/);
+  if (ko) {
+    return createDateFromParts(ko[1], ko[2], ko[3]);
+  }
+
+  const normalized = text
+    .replace(/\./g, "-")
+    .replace(/\//g, "-")
+    .replace(/\s*-\s*/g, "-")
+    .replace(/-$/, "")
+    .trim();
+
+  const dashed = normalized.match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:\s+.*)?$/);
+  if (dashed) {
+    return createDateFromParts(dashed[1], dashed[2], dashed[3]);
+  }
+
+  const date = new Date(text);
+  return Number.isNaN(date.getTime()) ? null : startOfDay(date);
+}
+
+function parseDisplayToDate(text) {
+  return parseDateStringValue(String(text || ""));
 }
 
 function isSameDate(a, b) {
@@ -350,21 +395,7 @@ function getParamDateValue(p) {
   }
 
   if (typeof raw === "string") {
-    const text = raw.trim();
-
-    const compact = text.match(/^(\d{4})(\d{2})(\d{2})$/);
-    if (compact) {
-      const d = new Date(Number(compact[1]), Number(compact[2]) - 1, Number(compact[3]));
-      return Number.isNaN(d.getTime()) ? null : startOfDay(d);
-    }
-
-    const normalized = text
-      .replace(/\./g, "-")
-      .replace(/\//g, "-")
-      .trim();
-
-    const d = new Date(normalized);
-    return Number.isNaN(d.getTime()) ? null : startOfDay(d);
+    return parseDateStringValue(raw);
   }
 
   if (typeof raw === "number") {
@@ -380,6 +411,8 @@ function getParamDisplay(p, format) {
 
   if (typeof cv.formattedValue === "string") {
     const fv = cv.formattedValue.trim();
+    const formattedDate = parseDateStringValue(fv);
+    if (formattedDate) return formatDateForUI(formattedDate, format);
     if (fv !== "" && fv !== "0") return fv;
   }
 
@@ -390,15 +423,8 @@ function getParamDisplay(p, format) {
   }
 
   if (typeof raw === "string") {
-    const compact = raw.trim().match(/^(\d{4})(\d{2})(\d{2})$/);
-    if (compact) {
-      const d = new Date(Number(compact[1]), Number(compact[2]) - 1, Number(compact[3]));
-      if (!Number.isNaN(d.getTime())) return formatDateForUI(d, format);
-    }
-
-    const normalized = raw.trim().replace(/\./g, "-").replace(/\//g, "-");
-    const d = new Date(normalized);
-    if (!Number.isNaN(d.getTime())) return formatDateForUI(d, format);
+    const parsedDate = parseDateStringValue(raw);
+    if (parsedDate) return formatDateForUI(parsedDate, format);
 
     const n = Number(raw);
     if (!Number.isNaN(n)) return numberToDateDisplay(n, format);
