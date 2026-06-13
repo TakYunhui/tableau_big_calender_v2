@@ -85,6 +85,13 @@ html, body {
   transform: translateY(-1px);
 }
 
+.dashboardNavLink.active {
+  background: #f2c94c;
+  border-color: #f7dc7d;
+  color: #5b4300;
+  box-shadow: 0 2px 6px rgba(173, 135, 13, 0.22);
+}
+
 .rangeLine {
   display: flex;
   align-items: center;
@@ -863,6 +870,13 @@ body:not(.cfgPage) .dashboardNavLink {
 body:not(.cfgPage) .dashboardNavLink:hover {
   background: rgba(255, 255, 255, 0.22);
   border-color: rgba(205, 218, 244, 0.72);
+}
+
+body:not(.cfgPage) .dashboardNavLink.active,
+body:not(.cfgPage) .dashboardNavLink.active:hover {
+  background: #f2c94c;
+  border-color: #f7dc7d;
+  color: #5b4300;
 }
 
 body:not(.cfgPage) .dateValue.pending {

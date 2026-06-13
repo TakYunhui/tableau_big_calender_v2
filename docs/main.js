@@ -101,7 +101,29 @@ function setCfgHint(msg) {
   if (el) el.textContent = msg || "";
 }
 
-function renderDashboardNav() {
+function normalizeDashboardName(value) {
+  return String(value || "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function isMatchingDashboardName(currentDashboardName, item) {
+  const current = normalizeDashboardName(currentDashboardName);
+  if (!current) return false;
+
+  const candidates = [item.dashboardName, item.menuLabel]
+    .map(normalizeDashboardName)
+    .filter(Boolean);
+
+  return candidates.some((candidate) => (
+    current === candidate ||
+    current.endsWith(candidate) ||
+    candidate.endsWith(current)
+  ));
+}
+
+function renderDashboardNav(currentDashboardName = "") {
   const listEl = qs("dashboardNavList");
   if (!listEl) return;
 
@@ -109,6 +131,7 @@ function renderDashboardNav() {
 
   DASHBOARD_NAV_ITEMS.forEach((item) => {
     const link = document.createElement("a");
+    const isActive = isMatchingDashboardName(currentDashboardName, item);
     link.className = "dashboardNavLink";
     link.href = item.url;
     link.target = "_top";
@@ -116,6 +139,10 @@ function renderDashboardNav() {
     link.title = `${item.menuLabel} - ${item.dashboardName}`;
     link.dataset.dashboardKey = item.key;
     link.dataset.dashboardName = item.dashboardName;
+    if (isActive) {
+      link.classList.add("active");
+      link.setAttribute("aria-current", "page");
+    }
     listEl.appendChild(link);
   });
 }
@@ -1587,7 +1614,8 @@ async function render() {
   await syncLayoutProfile();
 
   const settings = loadSettings();
-  renderDashboardNav();
+  const dash = await getDashboard();
+  renderDashboardNav(dash?.name || "");
 
   const settingsBtn = qs("settingsBtn");
   if (settingsBtn) settingsBtn.style.display = isAuthoringMode() ? "inline-flex" : "none";
