@@ -60,6 +60,24 @@ html, body {
   flex: 0 0 auto;
 }
 
+.singleDateHelp {
+  display: none;
+  min-width: 0;
+  flex: 1 1 auto;
+  padding: 0 6px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rangeBar.single-mode .singleDateHelp {
+  display: block;
+}
+
 .topActions {
   display: flex;
   align-items: center;
@@ -971,6 +989,14 @@ body[data-layout-profile="wide"] .rangeLine {
   flex: 1 1 auto;
 }
 
+body[data-layout-profile="wide"] .rangeBar.single-mode .rangeLine {
+  flex: 0 0 auto;
+}
+
+body[data-layout-profile="wide"] .singleDateHelp {
+  text-align: left;
+}
+
 body[data-layout-profile="wide"] .dateSlot {
   gap: 2px;
 }
@@ -1075,6 +1101,15 @@ body[data-layout-profile="compact"] .rangeLine {
   gap: 6px;
 }
 
+body[data-layout-profile="compact"] .rangeBar.single-mode .rangeLine {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body[data-layout-profile="compact"] .singleDateHelp {
+  font-size: 10px;
+  padding: 0;
+}
+
 body[data-layout-profile="compact"] .dateSlot {
   display: grid;
   grid-template-columns: 24px minmax(0, 1fr);
@@ -1119,6 +1154,10 @@ body[data-layout-profile="compact"].panel-open .rangeBar {
 }
 
 body[data-layout-profile="compact"].panel-open .rangeLine {
+  display: none;
+}
+
+body[data-layout-profile="compact"].panel-open .singleDateHelp {
   display: none;
 }
 
