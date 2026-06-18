@@ -476,8 +476,6 @@ function getParamDisplay(p, format) {
 
 function updateDateFieldLayout() {
   const settings = loadSettings();
-  const isCompact = activeLayoutProfileName === "compact";
-
   const rangeBar = qs("rangeBar");
   const startSlot = qs("startSlot");
   const endSlot = qs("endSlot");
@@ -493,12 +491,12 @@ function updateDateFieldLayout() {
     if (startSlot) startSlot.style.display = "none";
     if (sep) sep.style.display = "none";
     if (endSlot) endSlot.style.display = "flex";
-    if (endLabel) endLabel.textContent = isCompact ? "조회" : "조회일";
+    if (endLabel) endLabel.textContent = "기준";
     return;
   }
 
   if (startSlot) startSlot.style.display = "flex";
-  if (sep) sep.style.display = isCompact ? "none" : "";
+  if (sep) sep.style.display = activeLayoutProfileName === "compact" ? "none" : "";
   if (endSlot) endSlot.style.display = "flex";
   if (startLabel) startLabel.textContent = "시작";
   if (endLabel) endLabel.textContent = "종료";
@@ -904,6 +902,14 @@ function updatePrimaryModeButton() {
   const settings = loadSettings();
   const btn = qs("rangeModeBtn");
   if (!btn) return;
+
+  if (settings.kind === "single") {
+    btn.style.display = "none";
+    btn.disabled = true;
+    return;
+  }
+
+  btn.style.display = "";
 
   const isRangeOpen = isRangePickingMode();
   btn.textContent = "기간";
