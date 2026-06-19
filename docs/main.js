@@ -56,7 +56,7 @@ let lastEditedEdge = ""; // "start" | "end" | "range" | "quick"
 
 function qs(id) {
   return document.getElementById(id);
-  
+}
 
 function setHint(msg) {
   const el = qs("hint");
@@ -491,7 +491,7 @@ function updateDateFieldLayout() {
     if (startSlot) startSlot.style.display = "none";
     if (sep) sep.style.display = "none";
     if (endSlot) endSlot.style.display = "flex";
-    if (endLabel) endLabel.textContent = "조회";
+    if (endLabel) endLabel.textContent = "기준";
     return;
   }
 
