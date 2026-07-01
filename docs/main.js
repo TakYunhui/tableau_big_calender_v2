@@ -1151,6 +1151,58 @@ function getYtdRange() {
   return { start: startOfDay(start), end: today };
 }
 
+function getReferenceEndDate(settings) {
+  const fallback = startOfDay(new Date());
+  if (settings.kind === "single") {
+    return cloneDate(pendingStartDate || originalStartDate || fallback);
+  }
+
+  return cloneDate(
+    pendingEndDate
+    || originalEndDate
+    || pendingStartDate
+    || originalStartDate
+    || fallback
+  );
+}
+
+function getYearToReferenceEndRange(referenceEnd) {
+  const end = startOfDay(referenceEnd);
+  const start = new Date(end.getFullYear(), 0, 1);
+  return { start: startOfDay(start), end };
+}
+
+function getLastMonthFullRange() {
+  const today = startOfDay(new Date());
+  const start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+  const end = new Date(today.getFullYear(), today.getMonth(), 0);
+  return { start: startOfDay(start), end: startOfDay(end) };
+}
+
+function getLastYearSameMonthRange(referenceEnd) {
+  const base = startOfDay(referenceEnd);
+  const year = base.getFullYear() - 1;
+  const month = base.getMonth();
+  const start = new Date(year, month, 1);
+  const end = new Date(year, month + 1, 0);
+  return { start: startOfDay(start), end: startOfDay(end) };
+}
+
+function getLastYearFullRange(referenceEnd) {
+  const year = startOfDay(referenceEnd).getFullYear() - 1;
+  const start = new Date(year, 0, 1);
+  const end = new Date(year, 11, 31);
+  return { start: startOfDay(start), end: startOfDay(end) };
+}
+
+function getQuarterRange(referenceEnd, quarter) {
+  const year = startOfDay(referenceEnd).getFullYear();
+  const startMonth = (quarter - 1) * 3;
+  const start = new Date(year, startMonth, 1);
+  const end = new Date(year, startMonth + 3, 0);
+  return { start: startOfDay(start), end: startOfDay(end) };
+}
+
 function getQuickRange(settings, type) {
   if (settings.kind === "single") {
     switch (type) {
@@ -1165,6 +1217,8 @@ function getQuickRange(settings, type) {
     }
   }
 
+  const referenceEnd = getReferenceEndDate(settings);
+
   switch (type) {
     case "today":
       return getTodayRange();
@@ -1175,7 +1229,21 @@ function getQuickRange(settings, type) {
     case "thisMonth":
       return getThisMonthRange();
     case "ytd":
-      return getYtdRange();
+      return getYearToReferenceEndRange(referenceEnd);
+    case "lastMonth":
+      return getLastMonthFullRange();
+    case "lastYearSameMonth":
+      return getLastYearSameMonthRange(referenceEnd);
+    case "lastYear":
+      return getLastYearFullRange(referenceEnd);
+    case "q1":
+      return getQuarterRange(referenceEnd, 1);
+    case "q2":
+      return getQuarterRange(referenceEnd, 2);
+    case "q3":
+      return getQuarterRange(referenceEnd, 3);
+    case "q4":
+      return getQuarterRange(referenceEnd, 4);
     default:
       return null;
   }
@@ -1503,12 +1571,18 @@ function bindHandlers() {
 
 function updateQuickPanelVisibility() {
   const settings = loadSettings();
-  const isCompact = isCompactProfile();
   const todayBtn = document.querySelector('[data-quick="today"]');
   const yesterdayBtn = document.querySelector('[data-quick="yesterday"]');
   const weekBtn = document.querySelector('[data-quick="thisWeek"]');
   const monthBtn = document.querySelector('[data-quick="thisMonth"]');
   const ytdBtn = document.querySelector('[data-quick="ytd"]');
+  const lastMonthBtn = document.querySelector('[data-quick="lastMonth"]');
+  const lastYearSameMonthBtn = document.querySelector('[data-quick="lastYearSameMonth"]');
+  const lastYearBtn = document.querySelector('[data-quick="lastYear"]');
+  const q1Btn = document.querySelector('[data-quick="q1"]');
+  const q2Btn = document.querySelector('[data-quick="q2"]');
+  const q3Btn = document.querySelector('[data-quick="q3"]');
+  const q4Btn = document.querySelector('[data-quick="q4"]');
 
   if (settings.kind === "single") {
     if (todayBtn) todayBtn.textContent = "오늘";
@@ -1522,6 +1596,13 @@ function updateQuickPanelVisibility() {
     }
     if (weekBtn) weekBtn.style.display = "none";
     if (ytdBtn) ytdBtn.style.display = "none";
+    if (lastMonthBtn) lastMonthBtn.style.display = "none";
+    if (lastYearSameMonthBtn) lastYearSameMonthBtn.style.display = "none";
+    if (lastYearBtn) lastYearBtn.style.display = "none";
+    if (q1Btn) q1Btn.style.display = "none";
+    if (q2Btn) q2Btn.style.display = "none";
+    if (q3Btn) q3Btn.style.display = "none";
+    if (q4Btn) q4Btn.style.display = "none";
     return;
   } else {
     if (todayBtn) todayBtn.textContent = "오늘";
@@ -1533,8 +1614,27 @@ function updateQuickPanelVisibility() {
       monthBtn.textContent = "이번달";
       monthBtn.style.display = "";
     }
-    if (weekBtn) weekBtn.style.display = isCompact ? "none" : "";
-    if (ytdBtn) ytdBtn.style.display = isCompact ? "none" : "";
+    if (weekBtn) weekBtn.style.display = "";
+    if (ytdBtn) {
+      ytdBtn.textContent = "금년 누계";
+      ytdBtn.style.display = "";
+    }
+    if (lastMonthBtn) {
+      lastMonthBtn.textContent = "지난달";
+      lastMonthBtn.style.display = "";
+    }
+    if (lastYearSameMonthBtn) {
+      lastYearSameMonthBtn.textContent = "전년 동월";
+      lastYearSameMonthBtn.style.display = "";
+    }
+    if (lastYearBtn) {
+      lastYearBtn.textContent = "전년 누계";
+      lastYearBtn.style.display = "";
+    }
+    if (q1Btn) q1Btn.style.display = "";
+    if (q2Btn) q2Btn.style.display = "";
+    if (q3Btn) q3Btn.style.display = "";
+    if (q4Btn) q4Btn.style.display = "";
   }
 }
 
