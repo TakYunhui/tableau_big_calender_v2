@@ -6,7 +6,7 @@
   <title>조회기간</title>
 
   <link rel="stylesheet" href="./lib/flatpickr.min.css" />
-  <link rel="stylesheet" href="./styles.css?v=20260701_01" />
+  <link rel="stylesheet" href="./styles.css?v=20260701_02" />
 </head>
 
 <body>
@@ -37,19 +37,42 @@
   </div>
 
   <div id="quickHost" class="quickHost">
-    <div class="quickBar">
-      <button class="quickBtn" type="button" data-quick="today">오늘</button>
-      <button class="quickBtn" type="button" data-quick="yesterday">어제</button>
-      <button class="quickBtn" type="button" data-quick="thisWeek">이번주</button>
-      <button class="quickBtn" type="button" data-quick="thisMonth">이번달</button>
-      <button class="quickBtn" type="button" data-quick="ytd">금년 누계</button>
-      <button class="quickBtn" type="button" data-quick="lastMonth">지난달</button>
-      <button class="quickBtn" type="button" data-quick="lastYearSameMonth">전년 동월</button>
-      <button class="quickBtn" type="button" data-quick="lastYear">전년 누계</button>
-      <button class="quickBtn" type="button" data-quick="q1">1분기</button>
-      <button class="quickBtn" type="button" data-quick="q2">2분기</button>
-      <button class="quickBtn" type="button" data-quick="q3">3분기</button>
-      <button class="quickBtn" type="button" data-quick="q4">4분기</button>
+    <div class="quickGroups">
+      <div class="quickGroup quickGroup--recent" data-quick-group="recent">
+        <div class="quickGroupTitle">최근</div>
+        <div class="quickBar">
+          <button class="quickBtn" type="button" data-quick="today">오늘</button>
+          <button class="quickBtn" type="button" data-quick="yesterday">어제</button>
+          <button class="quickBtn" type="button" data-quick="thisWeek">이번주</button>
+        </div>
+      </div>
+
+      <div class="quickGroup quickGroup--month" data-quick-group="month">
+        <div class="quickGroupTitle">월</div>
+        <div class="quickBar">
+          <button class="quickBtn" type="button" data-quick="thisMonth">이번달</button>
+          <button class="quickBtn" type="button" data-quick="lastMonth">지난달</button>
+        </div>
+      </div>
+
+      <div class="quickGroup quickGroup--compare" data-quick-group="compare">
+        <div class="quickGroupTitle">누계·전년</div>
+        <div class="quickBar">
+          <button class="quickBtn" type="button" data-quick="ytd">금년 누계</button>
+          <button class="quickBtn" type="button" data-quick="lastYearSameMonth">전년 동월</button>
+          <button class="quickBtn" type="button" data-quick="lastYear">전년 누계</button>
+        </div>
+      </div>
+
+      <div class="quickGroup quickGroup--quarter" data-quick-group="quarter">
+        <div class="quickGroupTitle">분기</div>
+        <div class="quickBar">
+          <button class="quickBtn" type="button" data-quick="q1">1분기</button>
+          <button class="quickBtn" type="button" data-quick="q2">2분기</button>
+          <button class="quickBtn" type="button" data-quick="q3">3분기</button>
+          <button class="quickBtn" type="button" data-quick="q4">4분기</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -100,6 +123,6 @@
 
   <script src="./lib/flatpickr.min.js"></script>
   <script src="https://extensions.tableauusercontent.com/resources/tableau.extensions.1.latest.min.js"></script>
-  <script src="./main.js?v=20260701_03"></script>
+  <script src="./main.js?v=20260701_04"></script>
 </body>
 </html>

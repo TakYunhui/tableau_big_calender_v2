@@ -1293,6 +1293,15 @@ function updateQuickSelectionUI() {
   });
 }
 
+function updateQuickGroupVisibility() {
+  const groups = document.querySelectorAll("[data-quick-group]");
+  groups.forEach((group) => {
+    const buttons = Array.from(group.querySelectorAll(".quickBtn"));
+    const hasVisibleButton = buttons.some((btn) => btn.style.display !== "none");
+    group.style.display = hasVisibleButton ? "" : "none";
+  });
+}
+
 /* ===== 설정 패널 ===== */
 function detectType(p) {
   return (p?.dataType || p?.parameterType || p?.type || "").toString();
@@ -1600,6 +1609,7 @@ function updateQuickPanelVisibility() {
     if (q2Btn) q2Btn.style.display = "none";
     if (q3Btn) q3Btn.style.display = "none";
     if (q4Btn) q4Btn.style.display = "none";
+    updateQuickGroupVisibility();
     return;
   } else {
     if (todayBtn) todayBtn.textContent = "오늘";
@@ -1633,6 +1643,8 @@ function updateQuickPanelVisibility() {
     if (q3Btn) q3Btn.style.display = "";
     if (q4Btn) q4Btn.style.display = "";
   }
+
+  updateQuickGroupVisibility();
 }
 
 function isCompactProfile() {
